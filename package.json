@@ -28,7 +28,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "sol:lint": "solhint contracts/**/*.sol",
+    "sol:test": "hardhat test",
+    "sol:coverage": "hardhat coverage"
   },
   "eslintConfig": {
     "extends": [
@@ -47,5 +50,18 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.0",
+    "@nomiclabs/hardhat-etherscan": "^3.0.3",
+    "@nomiclabs/hardhat-waffle": "^2.0.0",
+    "@openzeppelin/contracts": "^4.5.0",
+    "chai": "^4.2.0",
+    "dotenv": "^16.0.0",
+    "ethereum-waffle": "^3.0.0",
+    "ethers": "^5.0.0",
+    "hardhat": "^2.9.3",
+    "solhint": "^3.3.7",
+    "solidity-coverage": "^0.7.20"
   }
 }
