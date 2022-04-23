@@ -31,7 +31,10 @@
     "eject": "react-scripts eject",
     "sol:lint": "solhint contracts/**/*.sol",
     "sol:test": "hardhat test",
-    "sol:coverage": "hardhat coverage"
+    "sol:coverage": "hardhat coverage",
+    "sol:deploy": "hardhat run scripts/deploy-contracts.js",
+    "sol:verify": "hardhat verify",
+    "sol:console": "hardhat console"
   },
   "eslintConfig": {
     "extends": [
