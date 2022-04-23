@@ -10,11 +10,14 @@ library DatesChecker {
 
             // check duplicate dates
             bytes32 dateHash = keccak256(abi.encodePacked(dates[i]));
-            if (maxDateHash == dateHash) {
-                revert("duplicate dates found");
-            }
-            if (maxDateHash < dateHash) {
+            if (i == 0 || maxDateHash < dateHash) {
                 maxDateHash = dateHash;
+            } else if (maxDateHash == dateHash) {
+                revert("duplicate dates found");
+            } else {
+                revert(
+                    "dates should be arranged in the assending order of their hashes"
+                );
             }
         }
     }
