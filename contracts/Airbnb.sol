@@ -6,6 +6,10 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "./DatesChecker.sol";
 import "./IWETH.sol";
 
+error DateUnavailable();
+error IncorrectPayment();
+error RentalNotFound();
+
 contract Airbnb is Ownable {
     using Counters for Counters.Counter;
 
@@ -40,7 +44,7 @@ contract Airbnb is Ownable {
         address renter
     );
 
-    event newDatesBooked(
+    event NewDatesBooked(
         string[] datesBooked,
         uint256 id,
         address booker,
@@ -48,14 +52,14 @@ contract Airbnb is Ownable {
         string imgUrl
     );
 
-    IWETH public WETH;
+    IWETH public weth;
 
     mapping(uint256 => RentalInfo) public rentals;
     uint256[] public rentalIds;
     mapping(uint256 => mapping(string => bool)) public bookings;
 
-    constructor(IWETH _WETH) {
-        WETH = _WETH;
+    constructor(IWETH _weth) {
+        weth = _weth;
     }
 
     function createRental(
@@ -104,10 +108,7 @@ contract Airbnb is Ownable {
     function _addBookings(uint256 id, string[] memory newBookings) internal {
         DatesChecker.validateDates(newBookings);
         for (uint256 i = 0; i < newBookings.length; i++) {
-            require(
-                !bookings[id][newBookings[i]],
-                "Already Booked For Requested Date"
-            );
+            if (bookings[id][newBookings[i]]) revert DateUnavailable();
             bookings[id][newBookings[i]] = true;
         }
     }
@@ -116,16 +117,13 @@ contract Airbnb is Ownable {
         external
         payable
     {
-        require(id < _rentalCounter.current(), "No such Rental");
-        uint256 amount = rentals[id].pricePerDay * 1 ether * newBookings.length;
-        require(
-            msg.value == amount,
-            "Please submit the asking price in order to complete the purchase"
-        );
+        if (id >= _rentalCounter.current()) revert RentalNotFound();
+        uint256 amount = rentals[id].pricePerDay * newBookings.length;
+        if (msg.value != amount) revert IncorrectPayment();
         _addBookings(id, newBookings);
         RentalInfo memory rental = rentals[id];
         _safeTransferETHWithFallback(rental.renter, amount);
-        emit newDatesBooked(
+        emit NewDatesBooked(
             newBookings,
             id,
             msg.sender,
@@ -140,8 +138,8 @@ contract Airbnb is Ownable {
 
     function _safeTransferETHWithFallback(address to, uint256 amount) internal {
         if (!_safeTransferETH(to, amount)) {
-            WETH.deposit{value: amount}();
-            require(WETH.transfer(to, amount), "transfer failed");
+            weth.deposit{value: amount}();
+            require(weth.transfer(to, amount), "transfer failed");
         }
     }
 
@@ -149,7 +147,8 @@ contract Airbnb is Ownable {
         internal
         returns (bool)
     {
-        (bool success, ) = to.call{value: value, gas: 30_000}(new bytes(0));
+        // solhint-disable-next-line
+        (bool success, ) = to.call{value: value, gas: 30_000}("");
         return success;
     }
 }

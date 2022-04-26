@@ -32,7 +32,7 @@ describe("Airbnb", function () {
       "string memory dosDescription",
       "string memory imgUrl",
       4,
-      10,
+      ethers.utils.parseEther("0.01"),
       dates
     );
     const d = await tx.wait();
@@ -50,7 +50,7 @@ describe("Airbnb", function () {
       dosDescription: "string memory dosDescription",
       imgUrl: "string memory imgUrl",
       maxGuests: 4,
-      pricePerDay: 10,
+      pricePerDay: Number(ethers.utils.parseEther("0.01")),
       datesBooked: dates,
       id: 0,
       renter: signer.address
@@ -60,94 +60,70 @@ describe("Airbnb", function () {
   it("Should not create a new rental if the date format is wrong", async () => {
     let dates = ["2021-10-1", "2021-10-01"];
     dates = sortDatesWithHashes(dates);
-    try {
-      const tx = await airbnb.createRental(
-        "Tokiyo Property 2",
-        "Tokiyo",
-        "123",
-        "100",
-        "string memory unoDescription",
-        "string memory dosDescription",
-        "string memory imgUrl",
-        4,
-        10,
-        dates
-      );
-    } catch (err) {
-      assert(err.message.includes('invalid date found'), "different error message was thrown");
-      return;
-    }
-    assert(false, "no error was thrown");
+    await expect(airbnb.createRental(
+      "Tokiyo Property 2",
+      "Tokiyo",
+      "123",
+      "100",
+      "string memory unoDescription",
+      "string memory dosDescription",
+      "string memory imgUrl",
+      4,
+      ethers.utils.parseEther("0.01"),
+      dates
+    )).to.be.revertedWith('InvalidDate');
   });
 
   it("Should not create a new rental if the dates are not arranged properly", async () => {
     let dates = ["2021-10-10", "2021-10-01"];
     dates = sortDatesWithHashes(dates);
     dates = dates.reverse();
-    try {
-      const tx = await airbnb.createRental(
-        "Tokiyo Property 2",
-        "Tokiyo",
-        "123",
-        "100",
-        "string memory unoDescription",
-        "string memory dosDescription",
-        "string memory imgUrl",
-        4,
-        10,
-        dates
-      );
-    } catch (err) {
-      assert(err.message.includes('dates should be arranged in the assending order of their hashes'), "different error message was thrown");
-      return;
-    }
-    assert(false, "no error was thrown");
+    await expect(airbnb.createRental(
+      "Tokiyo Property 2",
+      "Tokiyo",
+      "123",
+      "100",
+      "string memory unoDescription",
+      "string memory dosDescription",
+      "string memory imgUrl",
+      4,
+      ethers.utils.parseEther("0.01"),
+      dates
+    )).to.be.revertedWith('UnorderedDates');
   });
 
   it("Should not create a new rental if the date not possible - 1", async () => {
     let dates = ["2021-10-32", "2021-10-01"];
     dates = sortDatesWithHashes(dates);
-    try {
-      const tx = await airbnb.createRental(
-        "Tokiyo Property 2",
-        "Tokiyo",
-        "123",
-        "100",
-        "string memory unoDescription",
-        "string memory dosDescription",
-        "string memory imgUrl",
-        4,
-        10,
-        dates
-      );
-    } catch (err) {
-      assert(err.message.includes('invalid date found'), "different error message was thrown");
-      return;
-    }
-    assert(false, "no error was thrown");
+    await expect(airbnb.createRental(
+      "Tokiyo Property 2",
+      "Tokiyo",
+      "123",
+      "100",
+      "string memory unoDescription",
+      "string memory dosDescription",
+      "string memory imgUrl",
+      4,
+      ethers.utils.parseEther("0.01"),
+      dates
+    )).to.be.revertedWith("InvalidDate");
   });
 
   it("Should not create a new rental if the date not possible - 2", async () => {
     let dates = ["2021-02-29", "2021-10-01"];
     dates = sortDatesWithHashes(dates);
-    try {
-      const tx = await airbnb.createRental(
-        "Tokiyo Property 2",
-        "Tokiyo",
-        "123",
-        "100",
-        "string memory unoDescription",
-        "string memory dosDescription",
-        "string memory imgUrl",
-        4,
-        10,
-        dates
-      );
-    } catch (err) {
-      assert(err.message.includes('invalid date found'), "different error message was thrown");
-      return;
-    }
-    assert(false, "no error was thrown");
+    await expect(airbnb.createRental(
+      "Tokiyo Property 2",
+      "Tokiyo",
+      "123",
+      "100",
+      "string memory unoDescription",
+      "string memory dosDescription",
+      "string memory imgUrl",
+      4,
+      ethers.utils.parseEther("0.01"),
+      dates
+    )).to.be.revertedWith("InvalidDate");
   });
 
   it("Should create a new rental - 2", async () => {
@@ -162,7 +138,7 @@ describe("Airbnb", function () {
       "string memory dosDescription",
       "string memory imgUrl",
       4,
-      10,
+      ethers.utils.parseEther("0.01"),
       dates
     );
     await tx.wait();
@@ -173,136 +149,76 @@ describe("Airbnb", function () {
   it("should not create a new rental if not the owner", async () => {
     let dates = ["2024-02-29", "2021-10-01"];
     dates = sortDatesWithHashes(dates);
-    try {
-      const tx = await airbnb.connect(signers[1]).createRental(
-        "Tokiyo Property 2",
-        "Tokiyo",
-        "123",
-        "100",
-        "string memory unoDescription",
-        "string memory dosDescription",
-        "string memory imgUrl",
-        4,
-        10,
-        dates
-      );
-    } catch (err) {
-      assert(err.message.includes('Ownable: caller is not the owner'), "different error message was thrown");
-      return;
-    }
-    assert(false, "no error was thrown");
+    await expect(airbnb.connect(signers[1]).createRental(
+      "Tokiyo Property 2",
+      "Tokiyo",
+      "123",
+      "100",
+      "string memory unoDescription",
+      "string memory dosDescription",
+      "string memory imgUrl",
+      4,
+      ethers.utils.parseEther("0.01"),
+      dates
+    )).to.be.revertedWith("Ownable: caller is not the owner");
   });
 
   it("should not create a new booking if insuffient amount paid", async () => {
-    try {
-      const tx = await airbnb.connect(signers[1]).addDatesBooked(1, ["2022-02-28"], { value: ethers.utils.parseEther("1") });
-    } catch (err) {
-      assert(err.message.includes("Please submit the asking price in order to complete the purchase"), "different error message was thrown");
-      return;
-    }
-    assert(false, "no error was thrown");
+    await expect(airbnb.connect(signers[1]).addDatesBooked(1, ["2022-02-28"], { value: ethers.utils.parseEther("0.001") })).to.be.revertedWith("IncorrectPayment");
   });
 
   it("should not create a new booking if already booked for a date", async () => {
     let dates = ["2022-02-28", "2024-02-29"];
     dates = sortDatesWithHashes(dates);
-    try {
-      const tx = await airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("20") });
-    } catch (err) {
-      assert(err.message.includes("Already Booked For Requested Date"), "different error message was thrown");
-      return;
-    }
-    assert(false, "no error was thrown");
+    await expect(airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("0.02") })).to.be.revertedWith("DateUnavailable");
   });
 
   it("should not create a new booking if invalid date is given - 1", async () => {
     let dates = ["2022-02-28", "2022-02-2"];
     dates = sortDatesWithHashes(dates);
-    try {
-      const tx = await airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("20") });
-    } catch (err) {
-      assert(err.message.includes("invalid date found"), "different error message was thrown");
-      return;
-    }
-    assert(false, "no error was thrown");
+    await expect(airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("0.02") })).to.be.revertedWith("InvalidDate");
   });
 
   it("should not create a new booking if invalid date is given - 2", async () => {
     let dates = ["2022-02-28", "2022-02-2a"];
     dates = sortDatesWithHashes(dates);
-    try {
-      const tx = await airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("20") });
-    } catch (err) {
-      assert(err.message.includes("invalid date found"), "different error message was thrown");
-      return;
-    }
-    assert(false, "no error was thrown");
+    await expect(airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("0.02") })).to.be.revertedWith("InvalidDate");
   });
 
   it("should not create a new booking if duplicate dates are given", async () => {
     let dates = ["2022-02-28", "2022-02-28"];
     dates = sortDatesWithHashes(dates);
-    try {
-      const tx = await airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("20") });
-    } catch (err) {
-      assert(err.message.includes("duplicate dates found"), "different error message was thrown");
-      return;
-    }
-    assert(false, "no error was thrown");
+    await expect(airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("0.02") })).to.be.revertedWith("DuplicateDates");
   });
 
   it("should not create a new booking if impossible date is given - 1", async () => {
     let dates = ["2022-02-28", "2022-02-29"];
     dates = sortDatesWithHashes(dates);
-    try {
-      const tx = await airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("20") });
-    } catch (err) {
-      assert(err.message.includes("invalid date found"), "different error message was thrown");
-      return;
-    }
-    assert(false, "no error was thrown");
+    await expect(airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("0.02") })).to.be.revertedWith("InvalidDate");
   });
 
   it("should not create a new booking if impossible date is given - 2", async () => {
     let dates = ["2022-02-28", "2022-13-28"];
     dates = sortDatesWithHashes(dates);
-    try {
-      const tx = await airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("20") });
-    } catch (err) {
-      assert(err.message.includes("invalid date found"), "different error message was thrown");
-      return;
-    }
-    assert(false, "no error was thrown");
+    await expect(airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("0.02") })).to.be.revertedWith("InvalidDate");
   });
 
   it("should not create a new booking if impossible date is given - 3", async () => {
     let dates = ["2022-02-28", "2022-09-31"];
     dates = sortDatesWithHashes(dates);
-    try {
-      const tx = await airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("20") });
-    } catch (err) {
-      assert(err.message.includes("invalid date found"), "different error message was thrown");
-      return;
-    }
-    assert(false, "no error was thrown");
+    await expect(airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("0.02") })).to.be.revertedWith("InvalidDate");
   });
 
   it("should not create a new booking if impossible date is given - 4", async () => {
     let dates = ["2022-02-28", "2022-04-31"];
     dates = sortDatesWithHashes(dates);
-    try {
-      const tx = await airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("20") });
-    } catch (err) {
-      assert(err.message.includes("invalid date found"), "different error message was thrown");
-      return;
-    }
-    assert(false, "no error was thrown");
+    await expect(airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("0.02") })).to.be.revertedWith("InvalidDate");
   });
 
   it("should create a new booking", async () => {
     let dates = ["2022-02-28", "2021-02-28"];
     dates = sortDatesWithHashes(dates);
-    const tx = await airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("20") });
+    const tx = await airbnb.connect(signers[1]).addDatesBooked(1, dates, { value: ethers.utils.parseEther("0.02") });
     const { events } = await tx.wait();
     const { datesBooked, id, booker, city, imgUrl } = events[0].args;
     const booking = JSON.stringify({ datesBooked, id: Number(id), booker, city, imgUrl });

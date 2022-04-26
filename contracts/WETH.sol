@@ -4,6 +4,7 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract WETH is ERC20 {
+    // solhint-disable-next-line
     constructor() ERC20("WETH", "Wapped Ether") {}
 
     function deposit() external payable {
@@ -13,6 +14,7 @@ contract WETH is ERC20 {
     function withdraw(uint256 amount) external {
         require(balanceOf(msg.sender) > amount, "Insufficiant amount");
         _burn(msg.sender, amount);
+        // solhint-disable-next-line
         (bool success, ) = msg.sender.call{value: amount}("");
         require(success, "Eth transfer failed");
     }
