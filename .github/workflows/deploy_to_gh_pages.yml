@@ -28,7 +28,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: yarn install, build
         run: |
-          yarn install --frozen-lockfile
+          CI=false yarn install --frozen-lockfile
           yarn build 
       - name: deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
