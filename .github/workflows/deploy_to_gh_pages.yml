@@ -26,8 +26,10 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - name: yarn build
-        run: yarn build 
+      - name: yarn install, build
+        run: |
+          yarn install --frozen-lockfile
+          yarn build 
       - name: deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
