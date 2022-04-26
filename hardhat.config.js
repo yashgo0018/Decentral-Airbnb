@@ -35,9 +35,17 @@ module.exports = {
       url: "https://rpc-mumbai.matic.today",
       accounts: [process.env.PRIVATE_KEY],
       chainId: 80001
+    },
+    rinkeby: {
+      url: "https://rinkeby.infura.io/v3/0b0f6cc5977248b9a0371b827dfd2c75",
+      accounts: [process.env.PRIVATE_KEY],
+      chainId: 4
     }
   },
   etherscan: {
-    apiKey: process.env.POLYGONSCAN_API_KEY
+    apiKey: {
+      rinkeby: process.env.ETHERSCAN_API_KEY,
+      polygonMumbai: process.env.POLYGONSCAN_API_KEY
+    }
   },
 };
