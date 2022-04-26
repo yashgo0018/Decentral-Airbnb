@@ -29,7 +29,7 @@ jobs:
       - name: yarn install, build
         run: |
           CI=false yarn install --frozen-lockfile
-          CI=false yarn build 
+          PUBLIC_URL=/Decentral-Airbnb CI=false yarn build 
       - name: deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
