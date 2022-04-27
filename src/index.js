@@ -13,7 +13,7 @@ ReactDOM.render(
   <React.StrictMode>
     <MoralisProvider appId="tECvMa0FfpmnJebzgYIhfem7zwakrKguijNR1zxM" serverUrl="https://x2o6ipql1aij.usemoralis.com:2053/server">
       <NotificationProvider>
-        <BrowserRouter>
+        <BrowserRouter basename={document.querySelector('base')?.getAttribute('href') ?? '/'}>
           <App />
         </BrowserRouter>
       </NotificationProvider>
